@@ -65,14 +65,14 @@ int main(int argc, char **argv) {
 	//create window:
 	Mode::window = SDL_CreateWindow(
 		"Cat Want It", //TODO: remember to set a title for your game!
-		2*PPU466::ScreenWidth + 8, 2*PPU466::ScreenHeight + 8, //TODO: modify window size if you'd like
+		4*PPU466::ScreenWidth + 8, 4*PPU466::ScreenHeight + 8, //TODO: modify window size if you'd like
 		SDL_WINDOW_OPENGL
 		| SDL_WINDOW_RESIZABLE //uncomment to allow resizing
 		| SDL_WINDOW_HIGH_PIXEL_DENSITY //uncomment for full resolution on high-DPI screens
 	);
 
 	//prevent exceedingly tiny windows when resizing:
-	SDL_SetWindowMinimumSize(Mode::window, PPU466::ScreenWidth, PPU466::ScreenHeight);
+	SDL_SetWindowMinimumSize(Mode::window, 2*PPU466::ScreenWidth, 2*PPU466::ScreenHeight);
 
 	if (!Mode::window) {
 		std::cerr << "Error creating SDL window: " << SDL_GetError() << std::endl;
