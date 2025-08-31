@@ -6,6 +6,15 @@
 #include <vector>
 #include <deque>
 
+enum CatState {
+	CAT_HAPPY,
+	CAT_SAD,
+	CAT_WORKING,
+	CAT_ANGRY,
+	CAT_CONFUSED,
+	CAT_SLEEPY
+};
+
 struct PlayMode : Mode {
 	PlayMode();
 	virtual ~PlayMode();
@@ -27,8 +36,12 @@ struct PlayMode : Mode {
 	float background_fade = 0.0f;
 
 	//player position:
-	glm::vec2 player_at = glm::vec2(0.0f);
-
+	//glm::vec2 player_at = glm::vec2(0.0f);
+	
+	struct Cat {
+		CatState state;
+		glm::vec2 pos;
+	} cats[6];
 	//----- drawing handled by PPU466 -----
 
 	PPU466 ppu;
