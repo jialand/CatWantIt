@@ -31,6 +31,7 @@ void load_assets() {
         return;
     }
     std::string line;
+    bool paletteNumWarned = false;
     while (std::getline(fileList, line)) {
 
         std::string filePath = data_path("../assets/" + line + ".png");
@@ -76,9 +77,15 @@ void load_assets() {
                 }
 
                 tiles.push_back(tile);
-                palettes.push_back(palette);
+                if(palettes.size()<8)
+                    palettes.push_back(palette);
+                else if(!paletteNumWarned) {
+                    std::cout << "Palette exceed limitation! New Palette dumped!" << std::endl;
+                    paletteNumWarned = true;
+                }
             }
         }
+        std::cout << "ended with tile " << tiles.size() << std::endl;
     }
 
     fileList.close();

@@ -6,13 +6,9 @@
 #include <vector>
 #include <deque>
 
-enum CatState {
-	CAT_HAPPY,
-	CAT_SAD,
-	CAT_WORKING,
-	CAT_ANGRY,
-	CAT_CONFUSED,
-	CAT_SLEEPY
+enum ItemType {
+	Shape,
+	Color
 };
 
 struct PlayMode : Mode {
@@ -23,6 +19,10 @@ struct PlayMode : Mode {
 	virtual bool handle_event(SDL_Event const &, glm::uvec2 const &window_size) override;
 	virtual void update(float elapsed) override;
 	virtual void draw(glm::uvec2 const &drawable_size) override;
+	
+	void level_init();
+
+	int level = 1;
 
 	//----- game state -----
 
@@ -38,11 +38,19 @@ struct PlayMode : Mode {
 	//player position:
 	//glm::vec2 player_at = glm::vec2(0.0f);
 	
-	struct Cat {
-		CatState state;
-		glm::vec2 pos;
-	} cats[6];
-	//----- drawing handled by PPU466 -----
+	float elapsed_sum = 0.0f;
 
+	struct Item {
+		ItemType type;
+		uint8_t index;
+	};
+
+	struct Slot {
+		uint8_t shape;
+		uint8_t color = 0;
+		glm::vec2 pos = glm::vec2(128.0f, 256.0f);
+	} slots[6];
+	
+	//----- drawing handled by PPU466 -----
 	PPU466 ppu;
 };

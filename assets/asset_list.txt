@@ -1,1 +1,3 @@
-test
+green_tri
+yellow_squ
+blue_cir
