@@ -228,11 +228,11 @@ PlayMode::~PlayMode() {
 bool PlayMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
 
 	if (evt.type == SDL_EVENT_KEY_DOWN) {
-		if (evt.key.key == SDLK_LEFT) {
+		if (evt.key.key == SDLK_LEFT || evt.key.key == SDLK_A) {
 			left.downs += 1;
 			left.pressed = true;
 			return true;
-		} else if (evt.key.key == SDLK_RIGHT) {
+		} else if (evt.key.key == SDLK_RIGHT || evt.key.key == SDLK_D) {
 			right.downs += 1;
 			right.pressed = true;
 			return true;
@@ -425,21 +425,47 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 	}
 
 	//draw instruction
-	ppu.sprites[8].x = uint8_t(32);
-	ppu.sprites[8].y = uint8_t(200);
+	ppu.sprites[8].x = uint8_t(16);
+	ppu.sprites[8].y = uint8_t(184);
 	ppu.sprites[8].index = 3;
-	ppu.sprites[8].attributes = 3;
-	ppu.sprites[7].x = uint8_t(24);
-	ppu.sprites[7].y = uint8_t(200);
+	ppu.sprites[8].attributes = 0;
+	ppu.sprites[7].x = uint8_t(16);
+	ppu.sprites[7].y = uint8_t(192);
 	ppu.sprites[7].index = 2;
-	ppu.sprites[7].attributes = 2;
+	ppu.sprites[7].attributes = 0;
 	ppu.sprites[6].x = uint8_t(16);
 	ppu.sprites[6].y = uint8_t(200);
 	ppu.sprites[6].index = 1;
-	ppu.sprites[6].attributes = 1;
+	ppu.sprites[6].attributes = 0;
+
+	ppu.sprites[11].x = uint8_t(24);
+	ppu.sprites[11].y = uint8_t(184);
+	ppu.sprites[11].index = 7;
+	ppu.sprites[11].attributes = 0;
+	ppu.sprites[10].x = uint8_t(24);
+	ppu.sprites[10].y = uint8_t(192);
+	ppu.sprites[10].index = 7;
+	ppu.sprites[10].attributes = 0;
+	ppu.sprites[9].x = uint8_t(24);
+	ppu.sprites[9].y = uint8_t(200);
+	ppu.sprites[9].index = 7;
+	ppu.sprites[9].attributes = 0;
+
+	ppu.sprites[14].x = uint8_t(32);
+	ppu.sprites[14].y = uint8_t(184);
+	ppu.sprites[14].index = 3;
+	ppu.sprites[14].attributes = 3;
+	ppu.sprites[13].x = uint8_t(32);
+	ppu.sprites[13].y = uint8_t(192);
+	ppu.sprites[13].index = 2;
+	ppu.sprites[13].attributes = 2;
+	ppu.sprites[12].x = uint8_t(32);
+	ppu.sprites[12].y = uint8_t(200);
+	ppu.sprites[12].index = 1;
+	ppu.sprites[12].attributes = 1;
 
 	//clean item from last frame
-	for (int k = 9; k < 64; ++k) {
+	for (int k = 15; k < 64; ++k) {
 		ppu.sprites[k].x = 0;
 		ppu.sprites[k].y = 255;     //outside screen?
 		ppu.sprites[k].index = 0;
@@ -447,7 +473,7 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 	}
 
 	//draw item queue
-	int i=9;
+	int i=15;
 	for(Item item : item_queue) {
 		ppu.sprites[i].x = int8_t(item.pos.x);
 		ppu.sprites[i].y = int8_t(item.pos.y);
