@@ -132,13 +132,13 @@ PlayMode::PlayMode() {
 	palette_stream.close();
 	tile_stream.close();
 	std::cout << "Tiles num = " << tiles.size() << std::endl;
-	for (int i=0; i < tiles.size(); i++) {
+	for (size_t i=0; i < tiles.size(); i++) {
 		if (i == 31) {
 			std::cout << "Warning: Preseted tile 32 covered by asset pipeline!"<< std::endl;
 		}
 		ppu.tile_table[1+i] = tiles[i];
 	}
-	for (int i=0; i < palettes.size(); i++) {
+	for (size_t i=0; i < palettes.size(); i++) {
 		if (i == 7) {
 			std::cout << "Warning: Palette num exceed limitation!"<< std::endl;
 		}
