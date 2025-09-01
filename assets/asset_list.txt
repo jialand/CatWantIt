@@ -1,3 +1,4 @@
 green_tri
-yellow_squ
+orange_squ
 blue_cir
+yes

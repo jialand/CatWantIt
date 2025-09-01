@@ -21,6 +21,7 @@ struct PlayMode : Mode {
 	virtual void draw(glm::uvec2 const &drawable_size) override;
 	
 	void level_init();
+	bool level_complete();
 
 	int level = 1;
 
@@ -43,6 +44,7 @@ struct PlayMode : Mode {
 	struct Item {
 		ItemType type;
 		uint8_t index;
+		glm::vec2 pos = glm::vec2(128.0f, 256.0f);
 	};
 
 	struct Slot {

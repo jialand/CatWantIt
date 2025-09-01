@@ -15,6 +15,8 @@
 #include <fstream>
 #include <bitset>
 #include <random>
+#include <deque>
+#include <cmath>
 
 /*
 //credit @ https://github.com/xinyis991105/15-466-f20-base1/blob/master/
@@ -27,6 +29,8 @@ std::ifstream tile_stream;
 
 std:: random_device rd;
 std::mt19937 gen(rd());
+std::deque<PlayMode::Item> item_queue;
+bool first_item, game_end = false;
 
 Load<void> ps(LoadTagDefault, []() {
 	palette_stream.open(data_path("../assets/palettes.asset"));
@@ -40,10 +44,15 @@ uint8_t get_rand(int a, int b) {
 }
 
 void PlayMode::level_init() {
+	while(!item_queue.empty())
+		item_queue.pop_front();
+
+	first_item = true;
+
 	if(level == 1) {
-		slots[0].pos = glm::vec2(120.0f, 300.0f);
-		slots[1].pos = glm::vec2(128.0f, 300.0f);
-		slots[2].pos = glm::vec2(136.0f, 300.0f);
+		slots[0].pos = glm::vec2(120.0f, 100.0f);
+		slots[1].pos = glm::vec2(128.0f, 100.0f);
+		slots[2].pos = glm::vec2(136.0f, 100.0f);
 
 		for (int i = 0; i < 3; i++) {
 			slots[i].shape = get_rand(1,3);
@@ -52,10 +61,10 @@ void PlayMode::level_init() {
 	}
 
 	else if (level == 2) {
-		slots[0].pos = glm::vec2(120.0f, 300.0f);
-		slots[1].pos = glm::vec2(128.0f, 300.0f);
-		slots[2].pos = glm::vec2(136.0f, 300.0f);
-		slots[3].pos = glm::vec2(144.0f, 300.0f);
+		slots[0].pos = glm::vec2(120.0f, 100.0f);
+		slots[1].pos = glm::vec2(128.0f, 100.0f);
+		slots[2].pos = glm::vec2(136.0f, 100.0f);
+		slots[3].pos = glm::vec2(144.0f, 100.0f);
 
 		for (int i = 0; i < 4; i++) {
 			slots[i].shape = get_rand(1,3);
@@ -64,11 +73,11 @@ void PlayMode::level_init() {
 	}
 
 	else if (level == 3) {
-		slots[0].pos = glm::vec2(112.0f, 300.0f);
-		slots[1].pos = glm::vec2(120.0f, 300.0f);
-		slots[2].pos = glm::vec2(128.0f, 300.0f);
-		slots[3].pos = glm::vec2(136.0f, 300.0f);
-		slots[4].pos = glm::vec2(144.0f, 300.0f);
+		slots[0].pos = glm::vec2(112.0f, 100.0f);
+		slots[1].pos = glm::vec2(120.0f, 100.0f);
+		slots[2].pos = glm::vec2(128.0f, 100.0f);
+		slots[3].pos = glm::vec2(136.0f, 100.0f);
+		slots[4].pos = glm::vec2(144.0f, 100.0f);
 
 		for (int i = 0; i < 5; i++) {
 			slots[i].shape = get_rand(1,3);
@@ -77,18 +86,31 @@ void PlayMode::level_init() {
 	}
 
 	else if (level == 4) {
-		slots[0].pos = glm::vec2(112.0f, 300.0f);
-		slots[1].pos = glm::vec2(120.0f, 300.0f);
-		slots[2].pos = glm::vec2(128.0f, 300.0f);
-		slots[3].pos = glm::vec2(136.0f, 300.0f);
-		slots[4].pos = glm::vec2(144.0f, 300.0f);
-		slots[5].pos = glm::vec2(152.0f, 300.0f);
+		slots[0].pos = glm::vec2(112.0f, 100.0f);
+		slots[1].pos = glm::vec2(120.0f, 100.0f);
+		slots[2].pos = glm::vec2(128.0f, 100.0f);
+		slots[3].pos = glm::vec2(136.0f, 100.0f);
+		slots[4].pos = glm::vec2(144.0f, 100.0f);
+		slots[5].pos = glm::vec2(152.0f, 100.0f);
 
 		for (int i = 0; i < 6; i++) {
 			slots[i].shape = get_rand(1,3);
 			slots[i].color = 0;
 		}
 	}
+
+	else {
+		game_end = true;
+		
+	}
+}
+
+bool PlayMode::level_complete() {
+	for(int i = 0; i <= level + 1; i++) {
+		if(slots[i].shape != slots[i].color)
+			return false;
+	}
+	return true;
 }
 
 PlayMode::PlayMode() {
@@ -111,9 +133,15 @@ PlayMode::PlayMode() {
 	tile_stream.close();
 	std::cout << "Tiles num = " << tiles.size() << std::endl;
 	for (int i=0; i < tiles.size(); i++) {
+		if (i == 31) {
+			std::cout << "Warning: Preseted tile 32 covered by asset pipeline!"<< std::endl;
+		}
 		ppu.tile_table[1+i] = tiles[i];
 	}
 	for (int i=0; i < palettes.size(); i++) {
+		if (i == 7) {
+			std::cout << "Warning: Palette num exceed limitation!"<< std::endl;
+		}
 		ppu.palette_table[1+i] = palettes[i];
 	}
 	
@@ -133,18 +161,8 @@ PlayMode::PlayMode() {
     }
 	}
 
-	ppu.background_color = glm::u8vec4(255,99,71,0.5);
+	ppu.background_color = glm::u8vec4(217,221,192,0.5);
 	ppu.tile_table[0].bit0 = {
-		/*
-		0b11111111,
-		0b11111111,
-		0b11111111,
-		0b11111111,
-		0b11111111,
-		0b11111111,
-		0b11111111,
-		0b11111111,
-		*/
 		0b00000000,
 		0b00000000,
 		0b00000000,
@@ -163,6 +181,27 @@ PlayMode::PlayMode() {
 		0b00000000,
 		0b00000000,
 		0b00000000,
+	};
+
+	ppu.tile_table[32].bit0 = {
+		0b00000000,
+		0b00000000,
+		0b00000000,
+		0b00000000,
+		0b00000000,
+		0b00000000,
+		0b00000000,
+		0b00000000,
+	};
+	ppu.tile_table[32].bit1 = {
+		0b11111111,
+		0b11111111,
+		0b11111111,
+		0b11111111,
+		0b11111111,
+		0b11111111,
+		0b11111111,
+		0b11111111,
 	};
 
 	ppu.palette_table[0] = {
@@ -239,13 +278,80 @@ void PlayMode::update(float elapsed) {
 	if (down.pressed) cats[0].pos.y -= PlayerSpeed * elapsed;
 	if (up.pressed) cats[0].pos.y += PlayerSpeed * elapsed;
 	*/
+	if(game_end) return;
+
 	elapsed_sum += elapsed;
-	if(elapsed_sum >= 1.0f) {
+	if( elapsed_sum > 0.7f ) {
 		elapsed_sum =0;
-		slots[0].pos.y -= 8;
+		
+		//update item position && check if item is hit
+		int quant = 0;
+		for(Item& item : item_queue) {
+			item.pos.y -= 8;
+			if(fabs(item.pos.y - 100) < 1e-6) {
+				uint8_t hit = (uint8_t)std::round(((item.pos.x - slots[0].pos.x) / 8.0f)); // which slot is hit
+				if(item.type == Shape) {
+					slots[hit].shape = item.index;
+				}
+				else {
+					slots[hit].color = item.index;
+				}
+				quant++;
+			}
+		}
+		while(quant--) {
+			item_queue.pop_front();
+		}
+		
+		//check if completed
+		if(level_complete()) {
+			level++;
+			level_init();
+			return;
+		}
+
+		//spawn an item
+		uint8_t temp = get_rand(1,3);
+		if(first_item || temp == 3) { // 1/3 chance to spawn an item
+			first_item = false;
+			Item new_item;
+			temp = get_rand(1,2);
+			if(temp == 1) {
+				new_item.type = Shape;
+			}
+			else {
+				new_item.type = Color;
+			}
+			temp = get_rand(1,3);
+			new_item.index = temp;
+			temp = get_rand(1, level + 2);
+			
+			new_item.pos = glm::vec2(slots[temp-1].pos.x, 220);
+			item_queue.push_back(new_item);
+		}
+		
 	}
-	if (left.downs) slots[0].pos.x -= 8;
-	if (right.downs) slots[0].pos.x += 8;
+	
+	if(game_end) return;
+
+	if (left.downs) {
+		Slot s = slots[0];
+		for(int i = 0; i <= level; i++) {
+			slots[i].shape = slots[i + 1].shape;
+			slots[i].color = slots[i + 1].color;
+		}
+		slots[level + 1].shape = s.shape;
+		slots[level + 1].color = s.color;
+	}
+	else if (right.downs) {
+		Slot s = slots[level+1];
+		for(int i = level; i >= 0 ; i--) {
+			slots[i + 1].shape = slots[i].shape;
+			slots[i + 1].color = slots[i].color;
+		}
+		slots[0].shape = s.shape;
+		slots[0].color = s.color;
+	}
 
 	//reset button press counters:
 	left.downs = 0;
@@ -258,6 +364,32 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 	//--- set ppu state based on game state ---
 
 	//player sprite:
+	if(game_end) {
+		std::cout<<"drawing game end"<<std::endl;
+		
+		for (int k = 0; k < 64; ++k) {
+			ppu.sprites[k].x = 0;
+			ppu.sprites[k].y = 255;     
+			ppu.sprites[k].index = 0;
+			ppu.sprites[k].attributes = 0;
+		}
+		ppu.sprites[2].x = int8_t(slots[2].pos.x);
+		ppu.sprites[2].y = int8_t(slots[2].pos.y);
+		ppu.sprites[2].index = 6;
+		ppu.sprites[2].attributes = 0;
+		ppu.sprites[1].x = int8_t(slots[1].pos.x);
+		ppu.sprites[1].y = int8_t(slots[1].pos.y);
+		ppu.sprites[1].index = 5;
+		ppu.sprites[1].attributes = 0;
+		ppu.sprites[0].x = int8_t(slots[0].pos.x);
+		ppu.sprites[0].y = int8_t(slots[0].pos.y);
+		ppu.sprites[0].index = 4;
+		ppu.sprites[0].attributes = 0;
+		
+		ppu.draw(drawable_size);
+		return;
+	}
+
 	switch (level) {
 		case 4:
 			ppu.sprites[5].x = int8_t(slots[5].pos.x);
@@ -291,7 +423,44 @@ void PlayMode::draw(glm::uvec2 const &drawable_size) {
 			ppu.sprites[0].index = slots[0].shape;
 			ppu.sprites[0].attributes = slots[0].color;
 	}
-	
+
+	//draw instruction
+	ppu.sprites[8].x = uint8_t(32);
+	ppu.sprites[8].y = uint8_t(200);
+	ppu.sprites[8].index = 3;
+	ppu.sprites[8].attributes = 3;
+	ppu.sprites[7].x = uint8_t(24);
+	ppu.sprites[7].y = uint8_t(200);
+	ppu.sprites[7].index = 2;
+	ppu.sprites[7].attributes = 2;
+	ppu.sprites[6].x = uint8_t(16);
+	ppu.sprites[6].y = uint8_t(200);
+	ppu.sprites[6].index = 1;
+	ppu.sprites[6].attributes = 1;
+
+	//clean item from last frame
+	for (int k = 9; k < 64; ++k) {
+		ppu.sprites[k].x = 0;
+		ppu.sprites[k].y = 255;     //outside screen?
+		ppu.sprites[k].index = 0;
+		ppu.sprites[k].attributes = 0;
+	}
+
+	//draw item queue
+	int i=9;
+	for(Item item : item_queue) {
+		ppu.sprites[i].x = int8_t(item.pos.x);
+		ppu.sprites[i].y = int8_t(item.pos.y);
+		if(item.type == Shape) {
+			ppu.sprites[i].index = item.index;
+			ppu.sprites[i].attributes = 0;
+		}
+		else { // item is color
+			ppu.sprites[i].index = 32;
+			ppu.sprites[i].attributes = item.index;
+		}
+		i++;
+	}
 
 	//some other misc sprites:
 	/*
