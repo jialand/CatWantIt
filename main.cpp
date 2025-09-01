@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
 	//create window:
 	Mode::window = SDL_CreateWindow(
-		"Color The Shape", //TODO: remember to set a title for your game!
+		"Color That Shape", //TODO: remember to set a title for your game!
 		4*PPU466::ScreenWidth + 8, 4*PPU466::ScreenHeight + 8, //TODO: modify window size if you'd like
 		SDL_WINDOW_OPENGL
 		| SDL_WINDOW_RESIZABLE //uncomment to allow resizing
